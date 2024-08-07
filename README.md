@@ -27,8 +27,14 @@ The Turing aims to convene unique expertise across data science and AI to accele
     * Collaborating on AI Standards Hub
 
 ### In this repository you will find the following information:
+**In the Communications folder:**
 * Bi-weekly announcements sent to the community (ISAs, AAs, Turing Workstreams)
-* Community Calls plan, notes and slide decks
+* BridgeAI Annual Reports
+
+**In the Project Manager folder:**
+* Community Call agendas, notes and slide decks
+
+**Resources:**
 * Case Studies 
   
 In addition, you can find the [The Alan Turing Institute BridgeAI website](https://www.turing.ac.uk/partnering-turing/current-partnerships-and-collaborations/innovateukbridgeai).
