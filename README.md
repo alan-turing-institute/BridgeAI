@@ -28,6 +28,7 @@ The Turing aims to convene unique expertise across data science and AI to accele
 
 ### In this repository you will find the following information:
 **In the Communications folder:**
+* BridgeAI/Turing Team Bios
 * Bi-weekly announcements sent to the community (ISAs, AAs, Turing Workstreams)
 * BridgeAI Annual Reports
 
