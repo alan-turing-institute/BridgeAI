@@ -27,6 +27,8 @@ The Turing aims to convene unique expertise across data science and AI to accele
     * Collaborating on AI Standards Hub
 
 ### In this repository you will find the following information:
+This repository has been created to share and organise coordinated activities with the BridgeAI /Turing Workstreams community. You will find several work documents and outputs in the following folders.
+
 **In the Communications folder:**
 * BridgeAI/Turing Team Bios
 * Bi-weekly announcements sent to the community (ISAs, AAs, Turing Workstreams)
