@@ -1,0 +1,428 @@
+---
+title: "Formatting and Visualising BridgeAI EoI forms"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,       # Show the code in the html
+  results = "hide", # Hide the results in the html
+  message = FALSE,   # Hide messages in the HTML
+  warning = FALSE    # Hide warnings in the HTML
+)
+```
+
+# Introduction to this notebook
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. It means we can have text (like this) alongside code. There are other ways of writing and running R code, but a notebook file like this makes the code more explainable and interactive. When you execute code within the notebook, the results appear beneath the code.
+
+Try executing this code chunk by clicking the *Run* button (green arrow) within the chunk.
+
+```{r}
+# When a line starts with '#' it is not read as R code - it is a note to explain the code
+
+print("Hello BridgeAI team!")
+```
+# Step 1 - Find necessary inputs and packages
+
+Running the code chunk below runs the code `EoI_Process_Inputs.R`. Make sure the `EoI_Process_Inputs.R` file is in the same folder as this notebook (the one we are running right now). Make sure you have edited any lines that have '\# PLEASE CHANGE ME' above them. Ignore the rest!
+
+```{r}
+source('EoI_Process_Inputs.R')
+```
+
+# Step 2 - Read in the inputs and create output directory
+
+## Current EoI
+
+Running the code chunk below will load in the current EoI (the one you want to process)
+
+```{r}
+cEoI <- read.csv(paste0(cEoI_csv_directory,'/',cEoI_csv_filename), header = TRUE) # read the current EoI excel file into R
+raw_cEoI <- cEoI #to save later, unedited
+head(cEoI) # view the first few rows of the data
+```
+
+If you want to have a broader view of the data, go to your 'Environment tab' in RStudio and click on 'cEoI' - this will open up a new window for you to browse.
+
+Double check that the data has been read into R correctly i.e. correct number of rows & columns, column names. Also check that no data seems corrupted i.e. numbers and dates read in as expected.
+
+## Create output directory to store new files made
+
+```{r}
+output_dir <- paste0(cEoI_csv_directory,'/OUTPUTS_',tools::file_path_sans_ext(basename(cEoI_csv_filename)))
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir)
+}
+```
+
+# Step 3 - Tidy up Current_EoI
+
+Running the code chunk below will rename columns to be more sensible to read.
+
+```{r}
+# Replace '.' with a space (works better for some row names than others)
+colnames(cEoI) <- gsub("\\.\\.", ",", colnames(cEoI)) 
+colnames(cEoI) <- gsub("\\.", " ", colnames(cEoI)) 
+
+# Rename some specific columns
+colnames(cEoI)[colnames(cEoI) == "Please choose which option best describes what sort of company or organisation is seeking support "] <- "Organisation Stage"
+colnames(cEoI)[colnames(cEoI) == "Agriculture and food processing"] <- "SECTOR: Agriculture & food processing"
+colnames(cEoI)[colnames(cEoI) == "Construction"] <- "SECTOR: Construction"
+colnames(cEoI)[colnames(cEoI) == "Creative Industries"] <- "SECTOR: Creative Industries"
+colnames(cEoI)[colnames(cEoI) == "Software technology development,AI ML "] <- "SECTOR: Software technology development (AI/ML)"
+colnames(cEoI)[colnames(cEoI) == "Transportation,including logistics and warehousing"] <- "SECTOR: Transportation, including logistics & warehousing"
+colnames(cEoI)[colnames(cEoI) == "Other,1 "] <- "SECTOR: Other"
+colnames(cEoI)[colnames(cEoI) == "Company culture,approach to innovation"] <- "BARRIER: Company culture, approach to innovation"
+colnames(cEoI)[colnames(cEoI) == "Data quality,data sharing and or data management issues"] <- "BARRIER: Data quality, sharing and/or management"
+colnames(cEoI)[colnames(cEoI) == "Costs and complexity"] <- "BARRIER: Costs & complexity"
+colnames(cEoI)[colnames(cEoI) == "Lack of strategy and clear objectives"] <- "BARRIER: Lack of strategy and clear objectives"
+colnames(cEoI)[colnames(cEoI) == "Ethical,regulatory and compliance"] <- "BARRIER: Ethical, regulatory & compliance"
+colnames(cEoI)[colnames(cEoI) == "Process deficiencies and storage"] <- "BARRIER: Process deficiencies & storage"
+colnames(cEoI)[colnames(cEoI) == "Other,2 "] <- "BARRIER: Other"
+colnames(cEoI)[colnames(cEoI) == "Data scientists"] <- "CURRENT: Data scientists"
+colnames(cEoI)[colnames(cEoI) == "Machine learning experts"] <- "CURRENT: Machine learning experts"
+colnames(cEoI)[colnames(cEoI) == "Software engineers"] <- "CURRENT: Software engineers"
+colnames(cEoI)[colnames(cEoI) == "Data engineers"] <- "CURRENT: Data engineers"
+colnames(cEoI)[colnames(cEoI) == "Data analysts"] <- "CURRENT: Data analysts"
+colnames(cEoI)[colnames(cEoI) == "Statisticians"] <- "CURRENT: Statisticians"
+
+head(cEoI)
+
+```
+
+Running the code chunk below will add in new columns, that will be filled in later.
+
+```{r}
+
+# Define the specific names for the new columns
+new_column_names <- c('Fit to BridgeAI - Y/N/Maybe',
+                   'Fit to Turing offerings - Y/N/Maybe',
+                   'Suitability - ISA - Y/N/Maybe',
+                   'Rationale',
+                   'Suggested way forward',
+                   'Notes',
+                   'Partnerships contact (to provide 2nd opinion / further qualification)',
+                   'Additional notes',
+                   'Category',
+                   'Mapping to ISA Lead (initial)')
+
+# Add the new columns to the data frame
+for (column_name in new_column_names) {
+  cEoI[[column_name]] <- 'TO FILL'  # Initialize with any default value
+}
+```
+
+## Validation 1 of cEoI (No consent)
+
+Find if any companies did not consent, and separate them out of the main data frame. This will create 'cEoI_Val1' which can indicate the completion of validation step 1.
+
+```{r}
+# Find the column indices for rows with partial name matches
+consent_col_indices <- grep("Please tick to", colnames(cEoI))
+# Identify the rows where any of the identified columns contain 'No' (partial match)
+rows_with_no_consent_indices <- apply(cEoI[, consent_col_indices], 1, function(row) any(grepl("No", row)))
+# Subset the dataframe to get the rows with 'No' consent
+cEoI_NoConsent <- cEoI[rows_with_no_consent_indices, , drop = FALSE]
+# Remove these rows from the original dataframe
+cEoI_Val1 <- cEoI[!rows_with_no_consent_indices, , drop = FALSE] 
+```
+
+## Validation 2 of cEoI (Duplicates)
+
+Find if there are any duplicate companies, and separate them out of the main data frame. Duplicates are currently defined as EoI entries that match on one of these entries: Organisation Name,Companies House Registration no, Website, Email address.
+
+This will create 'cEoI_Val12' which can indicate the completion of both validation step 1 and 2.
+
+*NOTE: It would also be good to search past EoIs here, for duplicates.*
+
+```{r}
+# Define the column names to search for matches
+column_names <- c('Organisation Name','Companies House Registration no ','Website','Email address')
+# Extract the specified columns as a subset df
+subset_df <- cEoI_Val1[, column_names]
+# Identify the duplicated rows in the subset
+duplicated_rows <- duplicated(subset_df) | duplicated(subset_df, fromLast = TRUE)
+# Find the row indices where the subset has these duplicated values
+matching_indices <- which(duplicated_rows)
+# Create a new data frame with the matching rows
+cEoI_Duplicates <- cEoI_Val1[matching_indices, , drop = FALSE]
+# Remove the matching rows from the original data frame
+cEoI_V12 <- cEoI_Val1[-matching_indices, , drop = FALSE] # Val2 can indicate this dataframe has completed validation 1
+```
+
+## Remove some columns that will be less relevant when pairing with ISAs
+
+```{r}
+# Specify the columns to remove, keep the rest
+cols_to_remove <- c("ID", "Date","IP Address","URL","User Agent")
+cols_to_remove_combined <- c(which(names(cEoI_V12) %in% cols_to_remove), consent_col_indices)
+cEoI_V12 <- cEoI_V12[, -cols_to_remove_combined]
+cEoI_Duplicates <- cEoI_Duplicates[, -cols_to_remove_combined]
+cEoI_NoConsent <- cEoI_NoConsent[, -cols_to_remove_combined]
+```
+
+## Validate the validations!
+
+We now have 3 dataframes (cEoI_V12, cEoI_NoConsent and cEoI_Duplicates). The number of rows (companies) in these dataframes should add up to the same number in the original dataframe (cEoI) before we did anything to it. Let's check that, to make sure we have not lost or added a company.
+
+```{r}
+
+# Calculate the number of rows across the 3 dataframes
+total_rows_split <- nrow(cEoI_V12) + nrow(cEoI_NoConsent) + nrow(cEoI_Duplicates)
+
+# Calculate the number of rows in the original dataframe
+rows_cEoI <- nrow(cEoI)
+
+# Compare the sum to the number of rows in the original dataframe
+if (total_rows_split == rows_cEoI) {
+  cat("Great! The number of rows in the split dataframes adds up to the number of rows in the original dataframe.\n")
+} else {
+  warning("Oh no! The number of rows in the split dataframes does NOT add up to the number of rows in the original dataframe.\n")
+}
+
+```
+
+# Step 4 - Restructure the validated cEoI and save
+
+Now we will restructure the dataframe(s) in a way that is helpful for the next steps of matching each company to an ISA. We will then save each dataframe as a separate tab of an excel output.
+
+```{r}
+
+# Load library needed for this code chunk
+library(openxlsx)
+
+# Transpose the dataframe (this means turn columns into rows)
+cEoI_T <- as.data.frame(t(raw_cEoI))
+colnames(cEoI_T) <- NULL
+cEoI_V12_T <- as.data.frame(t(cEoI_V12))
+cEoI_NoConsent_T <- as.data.frame(t(cEoI_NoConsent))
+cEoI_Duplicates_T <- as.data.frame(t(cEoI_Duplicates))
+
+# Create a new workbook
+wb <- openxlsx::createWorkbook()
+
+# Define a list of worksheet names and corresponding data frames
+worksheets <- list(
+  "Raw" = cEoI_T,
+  "Validated" = cEoI_V12_T,
+  "NoConsent" = cEoI_NoConsent_T,
+  "Duplicates" = cEoI_Duplicates_T
+)
+
+# Create a bold text & shaded style
+BorderStyle <- openxlsx::createStyle(
+  fgFill = "#F0F0F0", 
+  wrapText = TRUE, 
+  border = "TopBottomLeftRight",
+  halign = "left"
+)
+
+NonBorderStyle <- openxlsx::createStyle(
+  halign = "left"
+)
+
+# Add worksheets, write dataframes to them, and apply styles
+for (sheet_name in names(worksheets)) {
+  data <- worksheets[[sheet_name]]
+  
+  # Add worksheet
+  openxlsx::addWorksheet(wb, sheet_name)
+  
+  # Write data to worksheet
+  openxlsx::writeData(wb, sheet_name, data, rowNames = TRUE)
+  
+  # Apply BorderStyle style to the first row
+  openxlsx::addStyle(wb, sheet_name, style = BorderStyle, rows = 1, cols = 1:ncol(data) + 1, gridExpand = TRUE)
+  # Apply BorderStyle to the first column
+  openxlsx::addStyle(wb, sheet_name, style = BorderStyle, rows = 1:(nrow(data) + 1), cols = 1, gridExpand = TRUE)
+  # Set non-BorderStyle to all other rows and columns
+  openxlsx::addStyle(wb, sheet_name, style = NonBorderStyle, rows = 2:nrow(data) + 1, cols = 2:ncol(data) + 1, gridExpand = TRUE)
+  # Set the width of the first column
+  openxlsx::setColWidths(wb, sheet_name, cols = 1, widths = 30)  # Adjust the width as needed
+}
+
+# Save the workbook
+in_filename <- tools::file_path_sans_ext(basename(cEoI_csv_filename)) # Extract the file name without extension
+out_filename <- file.path(paste0(in_filename, "_formatted.xlsx")) # Construct the output file path with the new extension
+openxlsx::saveWorkbook(wb, paste0(output_dir,'/',out_filename), overwrite = TRUE)
+
+```
+
+# Step 5 - Group companies by features and visualise
+
+***FIRST DRAFT!*** - for the plots where companies are allowed to tick more than one category (barrier, solution, current) think about whether the plots is valid and/or if there is a better way of summarizing.
+
+Currently this is just done for current EoI. It would be possible to do this for all past and current EoIs i.e. have one plot just for current EoI and a second pot for all (current + past) EoIs.
+
+We will start with grouping by fields on current EoI form (Oct 2024) that are not free text. Note, it is possible to turn the free text responses into categorical, with some thoughtful coding. E.g. search for the word "CEO" in Job Title field. A task for later, if we deem it worth it.
+
+Run the below code chunk to rename some columns first (to make the shorter and nicer for the purpose of plotting):
+
+```{r}
+
+# Rename 
+names(cEoI_V12)[names(cEoI_V12) == "Organisation Size"] <- "Size"
+names(cEoI_V12)[names(cEoI_V12) == "Organisation Type"] <- "Type"
+names(cEoI_V12)[names(cEoI_V12) == "Organisation Stage"] <- "Stage"
+names(cEoI_V12)[names(cEoI_V12) == "In your opinion,to what extent might data science and or AI improve your business revenue and or productivity "] <- "DS/AI can improve revenue/productivity"
+names(cEoI_V12)[names(cEoI_V12) == "To what extent has your organisation modelled or forecast future business revenue and or productivity using AI "] <- "Forecasted: DS/AI can improve revenue/productivity"
+names(cEoI_V12)[names(cEoI_V12) == "Briefly outline what engagement you have had with data science and AI solutions in the past,for example,advice,training,specialised staff "] <- "Engagement_with_DS/AI solutions"
+
+# Turn all 'Other' responses into Yes or No or Other (so they can be grouped easily for now)
+cEoI_V12$Stage <- sub("^Type of company\\? - .*", "Other", cEoI_V12$Stage)
+cEoI_V12$`SECTOR: Other` <- sub("^Yes - .*", "Yes", cEoI_V12$`SECTOR: Other`)
+cEoI_V12$`BARRIER: Other` <- sub("^Yes - .*", "Yes", cEoI_V12$`BARRIER: Other`)
+cEoI_V12$`Engagement_with_DS/AI solutions` <- sub("^Please specify - .*", "Other", cEoI_V12$`Engagement_with_DS/AI solutions`)
+```
+
+Now let's plot! Run the code block below to create the plots. These have been saved as png files to the same directory your cEoI input file was in.
+
+These are some plots to get us started. It is possible to create more sophisticated plots (perhaps using Plotly) at a later date.
+
+```{r}
+
+# Load library needed for this code chunk
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+# Size x Stage
+cEoI_V12_grouped <- cEoI_V12 %>%
+  dplyr::group_by(Size, Stage) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+size_stage <- 
+  ggplot2::ggplot(cEoI_V12_grouped, ggplot2::aes(x = reorder(Size, -Count, sum), y = Count, fill = Stage)) +
+  ggplot2::geom_bar(stat = "identity") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by Stage and Size)", x = "Size", y = "Count of companies") +
+  ggplot2::scale_fill_brewer(palette = "Set3")
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Size_by_Stage.png")) 
+ggplot2::ggsave(out_png, plot = size_stage, bg = "white")
+
+# Size x Type
+cEoI_V12_grouped <- cEoI_V12 %>%
+  dplyr::group_by(Size, Type) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+size_type <- 
+  ggplot2::ggplot(cEoI_V12_grouped, ggplot2::aes(x = reorder(Size, -Count, sum), y = Count, fill = Type)) +
+  ggplot2::geom_bar(stat = "identity") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by Size and Type)", x = "Size", y = "Count of companies") +
+  ggplot2::scale_fill_brewer(palette = "Set3")
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Size_by_Type.png")) 
+ggplot2::ggsave(out_png, plot = size_type, bg = "white")
+
+# Impact x Forecast 
+cEoI_V12_grouped <- cEoI_V12 %>%
+  dplyr::group_by(`DS/AI can improve revenue/productivity`, `Forecasted: DS/AI can improve revenue/productivity`) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+impact_forecast <- 
+  ggplot2::ggplot(cEoI_V12_grouped, ggplot2::aes(x = `Forecasted: DS/AI can improve revenue/productivity`, y = Count, fill = `DS/AI can improve revenue/productivity`)) +
+  ggplot2::geom_bar(stat = "identity") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by Impact and Forecast)", x = "Extent to which company has forecasted", y = "Count of companies") +
+  ggplot2::scale_fill_brewer(palette = "Set3")
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Imapct_by_Forecast.png")) 
+ggplot2::ggsave(out_png, plot = impact_forecast, bg = "white")
+
+# Engagement with solutions
+cEoI_V12_grouped <- cEoI_V12 %>%
+  dplyr::group_by(`Engagement_with_DS/AI solutions`) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+solutions <- 
+  ggplot2::ggplot(cEoI_V12_grouped, ggplot2::aes(x = `Engagement_with_DS/AI solutions`, y = Count)) +
+  ggplot2::geom_bar(stat = "identity", fill = "lightblue") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by engagement with solutions)", x = "Solution", y = "Count of companies") +
+  ggplot2::scale_fill_brewer(palette = "Set3") +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Solutions.png")) 
+ggplot2::ggsave(out_png, plot = solutions, bg = "white")
+
+# SECTOR
+sector_columns <- grep("^SECTOR", colnames(cEoI_V12), value = TRUE)
+sector_data <- cEoI_V12[, sector_columns, drop = FALSE]
+colnames(sector_data) <- gsub("^SECTOR: ", "", colnames(sector_data))
+
+sector_data <- sector_data %>%
+  tidyr::pivot_longer(cols = tidyselect::everything(), names_to = "Category", values_to = "Value") %>%
+  dplyr::filter(Value == "Yes") %>%
+  dplyr::group_by(Category) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+sector <- 
+  ggplot2::ggplot(sector_data, ggplot2::aes(x = Category, y = Count)) +
+  ggplot2::geom_bar(stat = "identity", fill = "lightblue") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by Sector)",
+       x = "Sector",
+       y = "Count of companies") +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Sector.png")) 
+ggplot2::ggsave(out_png, plot = sector, bg = "white")
+
+# BARRIER
+sector_columns <- grep("^BARRIER", colnames(cEoI_V12), value = TRUE)
+sector_data <- cEoI_V12[, sector_columns, drop = FALSE]
+colnames(sector_data) <- gsub("^BARRIER: ", "", colnames(sector_data))
+
+sector_data <- sector_data %>%
+  tidyr::pivot_longer(cols = tidyselect::everything(), names_to = "Category", values_to = "Value") %>%
+  dplyr::filter(Value == "Yes") %>%
+  dplyr::group_by(Category) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+barrier <- 
+  ggplot2::ggplot(sector_data, ggplot2::aes(x = Category, y = Count)) +
+  ggplot2::geom_bar(stat = "identity", fill = "lightblue") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by barrier type)",
+       x = "Barrier",
+       y = "Count of companies") +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Barrier.png")) 
+ggplot2::ggsave(out_png, plot = barrier, bg = "white")
+
+# CURRENT
+sector_columns <- grep("^CURRENT", colnames(cEoI_V12), value = TRUE)
+sector_data <- cEoI_V12[, sector_columns, drop = FALSE]
+colnames(sector_data) <- gsub("^CURRENT: ", "", colnames(sector_data))
+
+sector_data <- sector_data %>%
+  tidyr::pivot_longer(cols = tidyselect::everything(), names_to = "Category", values_to = "Value") %>%
+  dplyr::filter(Value == "Yes") %>%
+  dplyr::group_by(Category) %>%
+  dplyr::summarise(Count = dplyr::n())
+
+current <- 
+  ggplot2::ggplot(sector_data, ggplot2::aes(x = Category, y = Count)) +
+  ggplot2::geom_bar(stat = "identity", fill = "lightblue") +
+  ggplot2::geom_text(ggplot2::aes(label = Count), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Count of Companies (by current support)",
+       x = "Current support",
+       y = "Count of companies") +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+out_png <- file.path(paste0(output_dir, '/', in_filename, "_Current.png")) 
+ggplot2::ggsave(out_png, plot = current, bg = "white")
+
+
+```
