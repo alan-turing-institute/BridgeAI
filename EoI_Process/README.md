@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The purpose of this work is to automate some manual data wrangling and validation steps that are often done when a new batch of EoIs are recieved. 
+The purpose of this work is to automate some manual data wrangling and validation steps that are often done when a new batch of EoIs are received. 
 Another purpose is to create summary plots of current and previous EoIs, to summarise and visualise features of the companies that are submitting EoIs.
 
 ### Prerequisites to run this code:
@@ -17,7 +17,7 @@ Locally, download the files within this folder to your computer (or clone this G
 - Edit lines in [EoI_Process_Inputs.R](EoI_Process_Inputs.R)
 - Open up [EoI_Process.Rmd](EoI_Process.Rmd) in R Studio and either
    - Press Run -> Run All
-   - Run every code chunk invidually, to see each stage of processing
+   - Run every code chunk individually, to see each stage of processing
 - After [EoI_Process.Rmd](EoI_Process.Rmd) has successfully run, you should have a new folder called 'OUTPUTS_EoIname' with a formatted excel file and png plots   
 
 ## :warning: Important note about personal data 
@@ -33,7 +33,7 @@ Make sure no outputs are present in the `.Rmd` file and the `.html` rendered fil
 
 <img width="896" alt="clear-outputs" src="https://github.com/user-attachments/assets/bc85f495-3b65-47c4-9861-9705b01bb10d">
 
-Note, GitHub does not display the html file nicely if you click on it :( - download and open in your browswer. 
+Note, GitHub does not display the html file nicely if you click on it :( - download and open in your browser. 
 
 ## Description of what the `R` code does:
 > - Coming soon
