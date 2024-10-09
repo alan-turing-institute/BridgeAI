@@ -27,9 +27,11 @@ No data should be stored on this GitHub repo! Just the code to process the data.
 This is an `R notebook` file, to make it more accessible to new comers. 
  `R notebook` files can contain outputs from running the code chunks. 
  
-**Clear All Outputs** before uploading a new version to GitHub to make sure only the code (not the output of the code) is displayed:
+**Clear All Outputs** before uploading a new version to GitHub to make sure only the code (not the output of the code) is displayed. 
 
-<img width="747" alt="clear-outputs" src="https://github.com/user-attachments/assets/b7a8feea-d7ac-45d8-b049-a67f22be7b5d">
+Make sure no outputs are present in the `.Rmd` file and the `.html` rendered file. 
+
+<img width="896" alt="clear-outputs" src="https://github.com/user-attachments/assets/bc85f495-3b65-47c4-9861-9705b01bb10d">
 
 ## Description of what the `R` code does:
 > - Coming soon
