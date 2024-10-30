@@ -14,11 +14,12 @@ Another purpose is to create summary plots of current and previous EoIs, to summ
 
 Locally, download the files within this folder to your computer (or clone this GitHub repository).
 
-- Edit lines in [EoI_Process_Inputs.R](EoI_Process_Inputs.R)
+- Put the EoI csv files into a folder called 'Inputs'
+- Make an empty folder called 'Outputs'
 - Open up [EoI_Process.Rmd](EoI_Process.Rmd) in R Studio and either
-   - Press Run -> Run All
-   - Run every code chunk individually, to see each stage of processing
-- After [EoI_Process.Rmd](EoI_Process.Rmd) has successfully run, you should have a new folder called 'OUTPUTS_EoIname' with a formatted excel file and png plots   
+   - Change location of your 'Inputs' folder and csv file name (Step 1)
+   - Press *Run -> Run All* or run every code chunk individually, to see each stage of processing
+- After [EoI_Process.Rmd](EoI_Process.Rmd) has successfully run, you should have a new folder in Outputs called 'OUTPUTS_EoIname' with a formatted excel file and png plots 
 
 ## :warning: Important note about personal data 
 
