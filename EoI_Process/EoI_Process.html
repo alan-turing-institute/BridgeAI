@@ -367,15 +367,31 @@ code within the notebook, the results appear beneath the code.</p>
 
 print(&quot;Hello BridgeAI team!&quot;)</code></pre>
 </div>
+<div id="step-0---install-necessary-r-packages" class="section level1">
+<h1>Step 0 - Install necessary R packages</h1>
+<p>Run the below code chunk to check if you have the necessary packages
+installed.</p>
+<pre class="r"><code># Define a function to check if a package is installed. If not, install it!
+install_if_missing &lt;- function(package) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    install.packages(package, dependencies = TRUE)
+  }
+}
+
+# List packages to be installed and run the above function
+packages &lt;- c(&quot;dplyr&quot;, &quot;tidyverse&quot;, &quot;ggplot2&quot;, &quot;openxlsx&quot;)
+for (pkg in packages) {
+  install_if_missing(pkg)
+}</code></pre>
+</div>
 <div id="step-1---find-necessary-inputs-and-packages" class="section level1">
 <h1>Step 1 - Find necessary inputs and packages</h1>
-<p>Running the code chunk below runs the code
-<code>EoI_Process_Inputs.R</code>. Make sure the
-<code>EoI_Process_Inputs.R</code> file is in the same folder as this
-notebook (the one we are running right now). Make sure you have edited
-any lines that have ‘# PLEASE CHANGE ME’ above them. Ignore the
-rest!</p>
-<pre class="r"><code>source(&#39;EoI_Process_Inputs.R&#39;)</code></pre>
+<p>This is the only code chunk you should have to change, when you
+process a new EoI batch!</p>
+<pre class="r"><code># CHANGE ME - the directory that contains your &#39;Inputs&#39; folder. Inside &#39;Inputs&#39;, put all of your EoIs, current and past
+cEoI_directory &lt;- &quot;~/Documents/GitHub/All_BridgeAI/nonGitHub/demo&quot; 
+# CHANGE ME - the file name of the EoI you want to process in this session
+cEoI_csv_filename &lt;- &quot;EoI_B8.csv&quot; </code></pre>
 </div>
 <div id="step-2---read-in-the-inputs-and-create-output-directory" class="section level1">
 <h1>Step 2 - Read in the inputs and create output directory</h1>
@@ -383,7 +399,7 @@ rest!</p>
 <h2>Current EoI</h2>
 <p>Running the code chunk below will load in the current EoI (the one
 you want to process)</p>
-<pre class="r"><code>cEoI &lt;- read.csv(paste0(cEoI_csv_directory,&#39;/&#39;,cEoI_csv_filename), header = TRUE) # read the current EoI excel file into R
+<pre class="r"><code>cEoI &lt;- read.csv(paste0(cEoI_directory,&#39;/Inputs/&#39;,cEoI_csv_filename), header = TRUE) # read the current EoI excel file into R
 raw_cEoI &lt;- cEoI #to save later, unedited
 head(cEoI) # view the first few rows of the data</code></pre>
 <p>If you want to have a broader view of the data, go to your
@@ -395,7 +411,7 @@ no data seems corrupted i.e. numbers and dates read in as expected.</p>
 </div>
 <div id="create-output-directory-to-store-new-files-made" class="section level2">
 <h2>Create output directory to store new files made</h2>
-<pre class="r"><code>output_dir &lt;- paste0(cEoI_csv_directory,&#39;/OUTPUTS_&#39;,tools::file_path_sans_ext(basename(cEoI_csv_filename)))
+<pre class="r"><code>output_dir &lt;- paste0(cEoI_directory,&#39;/Outputs/OUTPUTS_&#39;,tools::file_path_sans_ext(basename(cEoI_csv_filename)))
 if (!dir.exists(output_dir)) {
   dir.create(output_dir)
 }</code></pre>
@@ -484,8 +500,10 @@ duplicated_rows &lt;- duplicated(subset_df) | duplicated(subset_df, fromLast = T
 matching_indices &lt;- which(duplicated_rows)
 # Create a new data frame with the matching rows
 cEoI_Duplicates &lt;- cEoI_Val1[matching_indices, , drop = FALSE]
-# Remove the matching rows from the original data frame
-cEoI_V12 &lt;- cEoI_Val1[-matching_indices, , drop = FALSE] # Val2 can indicate this dataframe has completed validation 1</code></pre>
+# Remove the matching rows from the original data frame - Val2 indicates this dataframe has completed validation 2
+if (length(matching_indices) != 0){
+  cEoI_V12 &lt;- cEoI_Val1[!matching_indices, , drop = FALSE]
+} else {cEoI_V12 &lt;- cEoI_Val1}</code></pre>
 </div>
 <div id="remove-some-columns-that-will-be-less-relevant-when-pairing-with-isas" class="section level2">
 <h2>Remove some columns that will be less relevant when pairing with

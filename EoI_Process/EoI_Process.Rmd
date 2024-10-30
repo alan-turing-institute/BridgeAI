@@ -23,12 +23,36 @@ Try executing this code chunk by clicking the *Run* button (green arrow) within 
 
 print("Hello BridgeAI team!")
 ```
-# Step 1 - Find necessary inputs and packages
 
-Running the code chunk below runs the code `EoI_Process_Inputs.R`. Make sure the `EoI_Process_Inputs.R` file is in the same folder as this notebook (the one we are running right now). Make sure you have edited any lines that have '\# PLEASE CHANGE ME' above them. Ignore the rest!
+# Step 0 - Install necessary R packages
+
+Run the below code chunk to check if you have the necessary packages installed.
 
 ```{r}
-source('EoI_Process_Inputs.R')
+# Define a function to check if a package is installed. If not, install it!
+install_if_missing <- function(package) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    install.packages(package, dependencies = TRUE)
+  }
+}
+
+# List packages to be installed and run the above function
+packages <- c("dplyr", "tidyverse", "ggplot2", "openxlsx")
+for (pkg in packages) {
+  install_if_missing(pkg)
+}
+```
+
+# Step 1 - Find necessary inputs and packages
+
+This is the only code chunk you should have to change, when you process a new EoI batch!
+
+```{r}
+
+# CHANGE ME - the directory that contains your 'Inputs' folder. Inside 'Inputs', put all of your EoIs, current and past
+cEoI_directory <- "~/Documents/GitHub/All_BridgeAI/nonGitHub/demo" 
+# CHANGE ME - the file name of the EoI you want to process in this session
+cEoI_csv_filename <- "EoI_B8.csv" 
 ```
 
 # Step 2 - Read in the inputs and create output directory
@@ -38,7 +62,7 @@ source('EoI_Process_Inputs.R')
 Running the code chunk below will load in the current EoI (the one you want to process)
 
 ```{r}
-cEoI <- read.csv(paste0(cEoI_csv_directory,'/',cEoI_csv_filename), header = TRUE) # read the current EoI excel file into R
+cEoI <- read.csv(paste0(cEoI_directory,'/Inputs/',cEoI_csv_filename), header = TRUE) # read the current EoI excel file into R
 raw_cEoI <- cEoI #to save later, unedited
 head(cEoI) # view the first few rows of the data
 ```
@@ -50,7 +74,7 @@ Double check that the data has been read into R correctly i.e. correct number of
 ## Create output directory to store new files made
 
 ```{r}
-output_dir <- paste0(cEoI_csv_directory,'/OUTPUTS_',tools::file_path_sans_ext(basename(cEoI_csv_filename)))
+output_dir <- paste0(cEoI_directory,'/Outputs/OUTPUTS_',tools::file_path_sans_ext(basename(cEoI_csv_filename)))
 if (!dir.exists(output_dir)) {
   dir.create(output_dir)
 }
@@ -147,8 +171,10 @@ duplicated_rows <- duplicated(subset_df) | duplicated(subset_df, fromLast = TRUE
 matching_indices <- which(duplicated_rows)
 # Create a new data frame with the matching rows
 cEoI_Duplicates <- cEoI_Val1[matching_indices, , drop = FALSE]
-# Remove the matching rows from the original data frame
-cEoI_V12 <- cEoI_Val1[-matching_indices, , drop = FALSE] # Val2 can indicate this dataframe has completed validation 1
+# Remove the matching rows from the original data frame - Val2 indicates this dataframe has completed validation 2
+if (length(matching_indices) != 0){
+  cEoI_V12 <- cEoI_Val1[!matching_indices, , drop = FALSE]
+} else {cEoI_V12 <- cEoI_Val1}
 ```
 
 ## Remove some columns that will be less relevant when pairing with ISAs
