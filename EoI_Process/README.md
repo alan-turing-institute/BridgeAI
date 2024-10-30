@@ -38,7 +38,18 @@ Note, GitHub does not display the html file nicely if you click on it :( - downl
 ## Description of what the `R` code does:
 > - Coming soon
 
+## Features to implement soon:
+- When reading in the EoI, check the formatting matches a demo format (we are assuming all bathes are the same as batch 7)
+- Check for duplicates across previous batches (by looping through the 'Inputs' directory - note which batch the duplicate is in, if found)
+- Seperate out the plotting code into a seperate function - this can be run seperately to formatting the EoI forms. Output the data as a table as well as bar plot so that the team can summarise the numbers how they like 
+- Create the plots for all batches, not just one batch
+
+## Features to consider later:
+- When checking for duplicates, do partial name matches
+- Can we match companies to ISAs in some sort automated way - based on some key words matches - can AI help? 
+
 ## People working on this
 - Rachael Stickland (BridgeAI ISA and Turing employee)
 - Alexandra Araujo Alvarez (BridgeAI Senior Research Community Manager)
+- Punita Maisuria 
 > - Please add
