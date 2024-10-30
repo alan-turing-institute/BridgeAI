@@ -46,7 +46,7 @@ Note, GitHub does not display the html file nicely if you click on it :( - downl
 
 ## Features to consider later:
 - When checking for duplicates, do partial name matches
-- Can we match companies to ISAs in some sort automated way - based on some key words matches - can AI help? 
+- Can we pre-match companies to ISAs in some sort automated way - based on some key words matches - can AI help? 
 
 ## People working on this
 - Rachael Stickland (BridgeAI ISA and Turing employee)
