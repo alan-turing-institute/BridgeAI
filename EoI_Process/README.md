@@ -34,8 +34,6 @@ Make sure no outputs are present in the `.Rmd` file and the `.html` rendered fil
 
 <img width="896" alt="clear-outputs" src="https://github.com/user-attachments/assets/bc85f495-3b65-47c4-9861-9705b01bb10d">
 
-Note, GitHub does not display the html file nicely if you click on it :( - download and open in your browser. 
-
 ## Description of what the `R` code does:
 > - Coming soon
 
@@ -53,4 +51,3 @@ Note, GitHub does not display the html file nicely if you click on it :( - downl
 - Rachael Stickland (BridgeAI ISA and Turing employee)
 - Alexandra Araujo Alvarez (BridgeAI Senior Research Community Manager)
 - Punita Maisuria 
-> - Please add
