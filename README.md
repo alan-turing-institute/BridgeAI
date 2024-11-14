@@ -44,17 +44,20 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
 
 ### Project Members
 
- - Dr Kirstie Whitaker, BridgeAI Programme Director
+ - Vera Matser, BridgeAI PI
  - Dominica D'Arcangelo, BridgeAI Programme Manager, ISA team
  - Anastasia Shteyn, BridgeAI Programme Manager, AI Governance
  - Alexandra Araujo Alvarez, BridgeAI Senior Research Community Manager
- - Ella McCaffrey, BridgeAI Project Manager
+ - Punita Maisuria, BridgeAI Project Coordinator
+
    
  **Turing Workstreams Contributors**
 
- - Vera Matser, Head of Skills
  - Matthew Forshaw, Senior Advisor for Skills
  - Clementina Ramirez Marengo, Applied Skills Officer
+ - Sofia Pires, Applied Skills Officer
+ - Aida Mehonic, TPS Senior Research, Research Application Manager
+ - Arielle Bennett, Turing Way Practitioners Hub team lead
  - Malvika Sharan, TPS Senior Researcher - Open Research, Turing Way Practitioners Hub team lead
  - Shane Conneely, Partnership Development Lead
  - Florian Ostmann, Head AI Governance and Regulatory Innovation, AI Governance team lead
@@ -80,6 +83,8 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
 - Liucheng Guo
 - Luis Santos
 - Miguel Herculano
+- Nadin Kokciyan
+- Saber Fallah
 - Wenjia Wang
 - Yufeng Zhang
   
@@ -88,6 +93,8 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
    
 **Previous project members**
  - Arshiya Thasneem, Project Coordinator
+ - Ella McCaffrey, BridgeAI Project Manager
+ - Dr Kirstie Whitaker, BridgeAI Programme Director
 
 📫 Contact
 ---
