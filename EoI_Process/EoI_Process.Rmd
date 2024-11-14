@@ -326,8 +326,9 @@ size_stage <-
   ggplot2::labs(title = "Count of Companies (by Stage and Size)", x = "Size", y = "Count of companies") +
   ggplot2::scale_fill_brewer(palette = "Set3")
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Size_by_Stage.png")) 
-ggplot2::ggsave(out_png, plot = size_stage, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Size_by_Stage")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = size_stage, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 # Size x Type
 cEoI_V12_grouped <- cEoI_V12 %>%
@@ -342,8 +343,9 @@ size_type <-
   ggplot2::labs(title = "Count of Companies (by Size and Type)", x = "Size", y = "Count of companies") +
   ggplot2::scale_fill_brewer(palette = "Set3")
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Size_by_Type.png")) 
-ggplot2::ggsave(out_png, plot = size_type, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Size_by_Type")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = size_type, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 # Impact x Forecast 
 cEoI_V12_grouped <- cEoI_V12 %>%
@@ -358,8 +360,9 @@ impact_forecast <-
   ggplot2::labs(title = "Count of Companies (by Impact and Forecast)", x = "Extent to which company has forecasted", y = "Count of companies") +
   ggplot2::scale_fill_brewer(palette = "Set3")
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Imapct_by_Forecast.png")) 
-ggplot2::ggsave(out_png, plot = impact_forecast, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Imapct_by_Forecast")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = impact_forecast, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 # Engagement with solutions
 cEoI_V12_grouped <- cEoI_V12 %>%
@@ -375,8 +378,9 @@ solutions <-
   ggplot2::scale_fill_brewer(palette = "Set3") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Solutions.png")) 
-ggplot2::ggsave(out_png, plot = solutions, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Solutions")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = solutions, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 # SECTOR
 sector_columns <- grep("^SECTOR", colnames(cEoI_V12), value = TRUE)
@@ -399,8 +403,9 @@ sector <-
        y = "Count of companies") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Sector.png")) 
-ggplot2::ggsave(out_png, plot = sector, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Sector")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = sector, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 # BARRIER
 sector_columns <- grep("^BARRIER", colnames(cEoI_V12), value = TRUE)
@@ -423,8 +428,9 @@ barrier <-
        y = "Count of companies") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Barrier.png")) 
-ggplot2::ggsave(out_png, plot = barrier, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Barrier")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = barrier, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 # CURRENT
 sector_columns <- grep("^CURRENT", colnames(cEoI_V12), value = TRUE)
@@ -447,8 +453,9 @@ current <-
        y = "Count of companies") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 
-out_png <- file.path(paste0(output_dir, '/', in_filename, "_Current.png")) 
-ggplot2::ggsave(out_png, plot = current, bg = "white")
+out_name <- file.path(paste0(output_dir, '/', in_filename, "_Current")) 
+ggplot2::ggsave(paste0(out_name,'.png'), plot = current, bg = "white")
+write.csv(cEoI_V12_grouped,paste0(out_name,'.csv'), row.names = FALSE)
 
 
 ```
