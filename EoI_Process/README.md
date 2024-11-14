@@ -43,6 +43,7 @@ Note, GitHub does not display the html file nicely if you click on it :( - downl
 - When reading in the EoI, check the formatting matches a demo format (we are assuming all bathes are the same as batch 7)
 - Check for duplicates across previous batches (by looping through the 'Inputs' directory - note which batch the duplicate is in, if found)
 - Create the plots for all batches, not just one batch
+- Think about other filters that may make them not eligible (e.g. employees > 250, not in UK)
 
 ## Features to consider later:
 - When checking for duplicates, do partial name matches
