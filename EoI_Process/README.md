@@ -1,4 +1,4 @@
-# Process EoIs
+# Automating the processing of EoI files
 
 ## Introduction
 
@@ -10,12 +10,20 @@ More specifically, [2_EoI_Process.Rmd](2_EoI_Process.Rmd) reads in a `EoI_BatchX
 
 Then [3_EoI_Plot.Rmd](3_EoI_Plot.Rmd) creates bar plots for each EoI batch separately and all batches together, to summarise and visualise features of the companies. Every time you run this plotting code, it will update the group plots that represent all EoI batches so far. 
 
-### Prerequisites to run this code:
+## People working on this
+- Rachael Stickland (BridgeAI ISA and Turing employee)
+- Alexandra Araujo Alvarez (BridgeAI Senior Research Community Manager)
+- Punita Maisuria 
+- *Please add*
+
+## Running the R code
+
+ Prerequisites:
 
  - Install `R` and `R Studio` on your computer (to interact with `R`)
- - Raw EoI csv files 
+ - Access to raw EoI csv files  
 
-### How to run this code:
+Running the code:
 
 - Locally, download the files within this folder to your computer (or a better option - clone this GitHub repository).
 - The first time you run the code, read and run [1_EoI_SetUp.Rmd](1_EoI_SetUp.Rmd)
@@ -25,9 +33,21 @@ At the start of your session your file structure may look like this:
 
 <img width="200" alt="files-to-start" src="Images/directory_input.png">
 
-After processing batch 1,2,3:
+After processing batches 1-3 it will something like this:
 
 <img width="200" alt="files-to-start" src="Images/directory_output.png">
+
+Understanding each tab in the formatted output file:
+1. The Raw tab contains unprocessed data - the same as the csv file, just transposed (columns are now rows).
+2. The Validated tab contains companies passing the two validation steps (in this example: 2,3,5,6,7,8,9)
+3. The NoConsent tab contains companies that did not click Yes to data sharing (in this example: 4)
+4. The Duplicates tab contains companies that had a match with another company, based on organisation name, companies house registration no, website, or email address (in this example: 1 and 9). After the column number the text indicates which EoI file found a match, for example for company 1 there was a match found in EoI_Demo_B2. After checking the duplicate further, you could choose to move them back to the 'Validated' tab if you want them to be included in the pairing with ISAs. 
+
+<img width="600" alt="raw_tab" src="Images/Raw.png">
+<img width="600" alt="raw_tab" src="Images/Validated.png">
+<img width="600" alt="raw_tab" src="Images/NoConsent.png">
+
+<img width="600" alt="raw_tab" src="Images/Duplicates.png">
 
 ## :warning: Important note about personal data 
 
@@ -44,8 +64,4 @@ The data contained in [Demo_Inputs](Demo_Inputs) is made up data, generated pseu
 - Cutting down lines of code (make more efficient, some currently a bit long winded)
 - Can we pre-match companies to ISAs in some sort automated way to begin with - based on key words matches - can AI help? 
 
-## People working on this
-- Rachael Stickland (BridgeAI ISA and Turing employee)
-- Alexandra Araujo Alvarez (BridgeAI Senior Research Community Manager)
-- Punita Maisuria 
-> - Please add
+
