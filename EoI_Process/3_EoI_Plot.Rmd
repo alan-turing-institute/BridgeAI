@@ -1,0 +1,307 @@
+---
+title: "3: Formatting and Visualising BridgeAI EoI forms"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,       # Show the code in the html
+  results = "hide", # Hide the results in the html
+  message = FALSE,   # Hide messages in the HTML
+  warning = FALSE    # Hide warnings in the HTML
+)
+```
+
+# Step 1 - Define the output folder
+
+It is assumed that you have run the notebook `2_EoI_Process.Rmd` before this one, on every EoI batch you would like to include in the plots. Please note, the below code will only plot things in the 'Validated' tab of the output excel files.
+
+```{r}
+# CHANGE NEXT LINE - location of 'Outputs' folder, which should now contain sub folders
+cEoI_output_directory <- "~/Documents/GitHub/BridgeAI/EoIs/Outputs"  
+```
+
+# Step 2 - Read in each formatted EoI, and make a combined EoI
+
+Run the code chunk below to find all EoI batches to process.
+
+```{r}
+# List all folders in the base directory that have a folder 'OUTPUTS_'
+all_dirs <- list.dirs(cEoI_output_directory, recursive = FALSE)
+outputs <- all_dirs[grep("^OUTPUTS_", basename(all_dirs))]
+
+print("These are the EoI batches to be processed. If a batch is listed and you do not want to include it in the group plots, please move it outside of your 'OUTPUTS' folder.")
+print(outputs)
+```
+
+Run the code chunk below to created a combined data frames with all EoI batches so far.
+
+```{r}
+# Load library needed for this code chunk
+library(readxl) # read_excel
+library(tidyselect) # everything
+library(dplyr) # bind_rows, mutate, select
+
+# Initialize an empty list to store the modified dataframes
+EoI_list <- list()
+
+# Loop over each batch_output
+for (batch_output in outputs) {
+  # Extract the demo number from the batch_output name
+  batch_id <- sub("OUTPUTS_", "", basename(batch_output))
+  # Construct the file path
+  file_path <- file.path(batch_output, paste0(batch_id, "_formatted.xlsx"))
+  # Read the excel file
+  this_df <- read_excel(file_path, sheet = 'Validated', .name_repair = "minimal")
+  this_df_T <- as.data.frame(t(this_df))
+  colnames(this_df_T) <- this_df_T[1, ]
+  this_df_T <- this_df_T[-1, ]
+  
+  # Add the Source_EoI column and make it the first column
+  this_df_T <- this_df_T %>% mutate(Source_EoI = as.factor(batch_id)) %>% select(Source_EoI, tidyselect::everything())
+  
+  # Append the modified dataframe to the list
+  EoI_list[[batch_id]] <- this_df_T
+}
+
+# Combine all dataframes in the list into a single dataframe
+EoI_combined <- bind_rows(EoI_list)
+
+# Reset row names to be sequential
+rownames(EoI_combined) <- NULL
+```
+
+# Step 4 - Prepare the combined EoI for plotting
+
+Run the below code chunk to rename some columns first (to make them shorter and nicer for the purpose of plotting). We will start with columns that are not free text. Note, it is possible to turn the free text responses into categorical, with some thoughtful coding. E.g. search for the word "CEO" in Job Title field. A task for later, if we deem it worth it.
+
+```{r}
+
+# Load library needed for this code chunk
+library(stringr) # regex, str_replace_all
+library(tidyselect) # everything
+library(dplyr) #across, mutate
+
+# Rename 
+names(EoI_combined)[names(EoI_combined) == "Organisation Size"] <- "Size"
+names(EoI_combined)[names(EoI_combined) == "Organisation Type"] <- "Type"
+names(EoI_combined)[names(EoI_combined) == "Organisation Stage"] <- "Stage"
+names(EoI_combined)[names(EoI_combined) == "SECTOR: Agriculture & food processing"] <- "SECTOR: Agri & Food"
+names(EoI_combined)[names(EoI_combined) == "SECTOR: Creative Industries"] <- "SECTOR: Creative"
+names(EoI_combined)[names(EoI_combined) == "SECTOR: Software technology development (AI/ML)"] <- "SECTOR: Software tech dev (AL/ML)"
+names(EoI_combined)[names(EoI_combined) == "SECTOR: Transportation, including logistics & warehousing"] <- "SECTOR: Transport (+logistics & warehouse)"
+names(EoI_combined)[names(EoI_combined) == "BARRIER: Company culture, approach to innovation"] <- "BARRIER: Company culture"
+names(EoI_combined)[names(EoI_combined) == "BARRIER: Data quality, sharing and/or management"] <- "BARRIER: Data quality/sharing/management"
+names(EoI_combined)[names(EoI_combined) == "BARRIER: Lack of strategy and clear objectives"] <- "BARRIER: Unclear strategy & objectives"
+names(EoI_combined)[names(EoI_combined) == "In your opinion,to what extent might data science and or AI improve your business revenue and or productivity"] <- "DS/AI can improve revenue/productivity"
+names(EoI_combined)[names(EoI_combined) == "To what extent has your organisation modelled or forecast future business revenue and or productivity using AI"] <- "Forecasted: DS/AI can improve revenue/productivity"
+names(EoI_combined)[names(EoI_combined) == "Briefly outline what engagement you have had with data science and AI solutions in the past,for example,advice,training,specialised staff"] <- "Engagement_with_DS/AI solutions"
+
+# Turn all 'Other' responses into Yes or No or Other (so they can be grouped easily for now)
+EoI_combined$Stage <- sub("^Please specify - .*", "Other", EoI_combined$Stage)
+EoI_combined$`SECTOR: Other` <- sub("^Yes - .*", "Yes", EoI_combined$`SECTOR: Other`)
+EoI_combined$`BARRIER: Other` <- sub("^Yes - .*", "Yes", EoI_combined$`BARRIER: Other`)
+EoI_combined$`Engagement_with_DS/AI solutions` <- sub("^Please specify - .*", "Other", EoI_combined$`Engagement_with_DS/AI solutions`)
+
+# Shorter text categories
+EoI_combined$Size <- gsub(" employees\\)", ")", EoI_combined$Size)
+EoI_combined <- EoI_combined %>% mutate(across(tidyselect::everything(), ~ str_replace_all(., regex("data science", ignore_case = TRUE), "DS")))
+EoI_combined$Source_EoI <- as.factor(EoI_combined$Source_EoI) #previous learn removed the factor
+```
+
+# Step 5 - Plotting!
+
+## Prepare plotting code
+
+Run the code block below to create the function that defines what to plot.
+
+PLEASE NOTE: for the plots where companies are allowed to tick more than one category (barrier, solution, current) think about whether the plots is valid and/or if there is a better way of summarizing to show which numbers came from which company.
+
+```{r}
+
+# Load libraries needed for this code chunk
+library(tidyr) # pivot_longer, everything
+library(ggplot2) # aes, element_text, geom_bar, geom_text, ggplot, ggsave, labs, position_stack, scale_fill_brewer, theme, theme_minimal
+library(dplyr) # filter, group_by, n, summarise
+
+make_plots <- function(filtered_EoI,factor,filtered_odir) {
+  
+  # Size x Stage
+  cEoI_df_grouped <- filtered_EoI %>%
+    group_by(Size, Stage) %>%
+    summarise(Count = n())
+  
+  size_stage <- 
+    ggplot(cEoI_df_grouped, aes(x = reorder(Size, -Count, sum), y = Count, fill = Stage)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Size and Stage", x = "Size", y = "Count of companies") +
+    scale_fill_brewer(palette = "Set3") +
+    theme(legend.position = "top")
+  
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Size_by_Stage')) 
+  ggsave(paste0(out_name,'.png'), plot = size_stage, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+  
+  # Size x Type
+  cEoI_df_grouped <- filtered_EoI %>%
+    group_by(Size, Type) %>%
+    summarise(Count = n())
+  
+  size_type <- 
+    ggplot(cEoI_df_grouped, aes(x = reorder(Size, -Count, sum), y = Count, fill = Type)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Size and Type", x = "Size", y = "Count of companies") +
+    scale_fill_brewer(palette = "Set3") +
+    theme(legend.position = "top",legend.direction = "vertical")
+  
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Size_by_Type')) 
+  ggsave(paste0(out_name,'.png'), plot = size_type, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+  
+  # Impact x Forecast 
+  cEoI_df_grouped <- filtered_EoI %>%
+    group_by(`DS/AI can improve revenue/productivity`, `Forecasted: DS/AI can improve revenue/productivity`) %>%
+    summarise(Count = n())
+  
+  impact_forecast <- 
+    ggplot(cEoI_df_grouped, aes(x = `Forecasted: DS/AI can improve revenue/productivity`, y = Count, fill = `DS/AI can improve revenue/productivity`)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Forecast of AI impact", x = "Extent to which company has forecasted", y = "Count of companies") +
+    scale_fill_brewer(palette = "Set3") +
+    theme(legend.position = "top",legend.direction = "vertical")
+  
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Imapct_by_Forecast')) 
+  ggsave(paste0(out_name,'.png'), plot = impact_forecast, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+  
+  # Engagement with solutions
+  cEoI_df_grouped <- filtered_EoI %>%
+    group_by(`Engagement_with_DS/AI solutions`) %>%
+    summarise(Count = n())
+  
+  solutions <- 
+    ggplot(cEoI_df_grouped, aes(x = `Engagement_with_DS/AI solutions`, y = Count)) +
+    geom_bar(stat = "identity", fill = "lightblue") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Engagement with solutions", x = "Solution", y = "Count of companies") +
+    scale_fill_brewer(palette = "Set3") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "top")
+  
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Solutions')) 
+  ggsave(paste0(out_name,'.png'), plot = solutions, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+  
+  # SECTOR
+  sector_columns <- grep("^SECTOR", colnames(filtered_EoI), value = TRUE)
+  sector_data <- filtered_EoI[, sector_columns, drop = FALSE]
+  colnames(sector_data) <- gsub("^SECTOR: ", "", colnames(sector_data))
+  
+  sector_data <- sector_data %>%
+    pivot_longer(cols = tidyselect::everything(), names_to = "Category", values_to = "Value") %>%
+    dplyr::filter(Value == "Yes") %>%
+    group_by(Category) %>%
+    summarise(Count = n())
+  
+  sector <- 
+    ggplot(sector_data, aes(x = Category, y = Count)) +
+    geom_bar(stat = "identity", fill = "lightblue") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Sector",
+                  x = "Sector",
+                  y = "Count of companies") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),)
+  
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Sector')) 
+  ggsave(paste0(out_name,'.png'), plot = sector, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+  
+  # BARRIER
+  sector_columns <- grep("^BARRIER", colnames(filtered_EoI), value = TRUE)
+  sector_data <- filtered_EoI[, sector_columns, drop = FALSE]
+  colnames(sector_data) <- gsub("^BARRIER: ", "", colnames(sector_data))
+  
+  sector_data <- sector_data %>%
+    pivot_longer(cols = tidyselect::everything(), names_to = "Category", values_to = "Value") %>%
+    dplyr::filter(Value == "Yes") %>%
+    group_by(Category) %>%
+    summarise(Count = n())
+  
+  barrier <- 
+    ggplot(sector_data, aes(x = Category, y = Count)) +
+    geom_bar(stat = "identity", fill = "lightblue") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Experience of barriers",
+                  x = "Barrier",
+                  y = "Count of companies") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position = "top")
+  
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Barrier')) 
+  ggsave(paste0(out_name,'.png'), plot = barrier, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+  
+  # CURRENT
+  sector_columns <- grep("^CURRENT", colnames(filtered_EoI), value = TRUE)
+  sector_data <- filtered_EoI[, sector_columns, drop = FALSE]
+  colnames(sector_data) <- gsub("^CURRENT: ", "", colnames(sector_data))
+  
+  sector_data <- sector_data %>%
+    pivot_longer(cols = tidyselect::everything(), names_to = "Category", values_to = "Value") %>%
+    dplyr::filter(Value == "Yes") %>%
+    group_by(Category) %>%
+    summarise(Count = n())
+  
+  current <- 
+    ggplot(sector_data, aes(x = Category, y = Count)) +
+    geom_bar(stat = "identity", fill = "lightblue") +
+    geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+    theme_minimal() +
+    labs(title = "Current support",
+                  x = "Current support",
+                  y = "Count of companies") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position = "top")
+  out_name <- file.path(paste0(filtered_odir,'/',factor,'_Current')) 
+  ggsave(paste0(out_name,'.png'), plot = current, bg = "white")
+  write.csv(cEoI_df_grouped,paste0(out_name,'.csv'), row.names = FALSE)
+}
+```
+
+## Run the plotting code
+
+Run the code chunk below to create the plots for each batch separately, and all batches combined.
+
+For each batch output directory, the plots will be saved as png files inside a new sub-directory called 'Plots'. For the combined plots, see the 'Combined_OUTPUTS_timestamp' directory newly created.
+
+```{r}
+
+# Loop through each batch and make the plots for each EoI
+for (factor in levels(EoI_combined$Source_EoI)) {
+  # Filter the dataframe to only include rows from the current factor
+  filtered_EoI <- EoI_combined[EoI_combined$Source_EoI == factor, ]
+  # Make output directory for the plots
+  filtered_odir <- paste0(cEoI_output_directory,'/OUTPUTS_',factor,'/Plots')
+   if (!dir.exists(filtered_odir)) {
+     dir.create(filtered_odir)
+     make_plots(filtered_EoI,factor,filtered_odir)
+   } else {
+     warning(paste("Directory for", factor, "already exists. Skipping!\n"))
+   }
+}
+```
+
+```{r}
+# Plot combined EoI
+timestamp <- format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
+filtered_odir <- paste0(cEoI_output_directory,'/Comined_OUTPUTS_',timestamp)
+dir.create(filtered_odir)
+make_plots(EoI_combined,'Combined',filtered_odir)
+  
+```

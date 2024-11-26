@@ -1,0 +1,54 @@
+---
+title: "1: Formatting and Visualising BridgeAI EoI forms"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,       # Show the code in the html
+  results = "hide", # Hide the results in the html
+  message = FALSE,   # Hide messages in the HTML
+  warning = FALSE    # Hide warnings in the HTML
+)
+```
+
+# Introduction to this notebook
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. It means we can have text (like this) alongside code. There are other ways of writing and running R code, but a notebook file like this makes the code more explainable and interactive.
+
+In the toolbar at the top of this notebook, make sure you are in 'Visual' mode (not 'Source') as this will make the notebook nicer to look at. However, you can edit and run code in either mode.
+
+When you execute code within the notebook, the results appear beneath the code. Try executing this code chunk by clicking the *Run* button (green arrow) within the chunk. Note, to run all code chunks in a notebook in one go, select *Run -\> Run All* in the top right hand corner.
+
+```{r}
+# When a line starts with '#' it is not read as R code - it is a note to explain the code
+
+print("Hello BridgeAI team!")
+```
+
+You should see that the output of the code is displayed underneath the code block after you ran it. There are prettier ways of displaying outputs, but this will do for now. Edit the text to be something different (the text inside the double quote marks " ") and run the code chunk again.
+
+# Install necessary R packages
+
+Run the below code chunk to check if you have the necessary packages installed. If a package is found to not be installed, it will install it into your R environment. These packages are needed in order to run `2_EoI_Process.Rmd` or `3_EoI_Plot.Rmd`, and they are loaded by `library(function-name)` within these two files.
+
+```{r}
+# Define a function to check if a package is installed. If not, install it!
+install_if_missing <- function(package) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    install.packages(package, dependencies = TRUE)
+  }
+}
+
+# List packages to be installed and run the above function
+packages <- c("dplyr", "tidyverse", "ggplot2", "openxlsx","readxl","stringr")
+for (pkg in packages) {
+  install_if_missing(pkg)
+}
+```
+
+# R for beginners
+
+The files `2_EoI_Process.Rmd` or `3_EoI_Plot.Rmd` have lots of documentation explaining what is happening throughout - even if you do not fully understand every line of code, it is good to make sure you understand what it is trying to do, in order to check the outputs it produces are correct!
+
+If it's a tad overwhelming, consider taking a short intro to R course, for example: <https://carpentries-incubator.github.io/open-science-with-r/index.html>. These notebooks are a good starting place, but they can be edited and improved down the line, once you are comfortable with coding in R.
