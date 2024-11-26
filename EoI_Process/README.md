@@ -2,52 +2,50 @@
 
 ## Introduction
 
-The purpose of this work is to automate some manual data wrangling and validation steps that are often done when a new batch of EoIs are received. 
-Another purpose is to create summary plots of current and previous EoIs, to summarise and visualise features of the companies that are submitting EoIs.
+The purpose of this work is to automate some manual data wrangling and validation steps that are often done when a new batch of EoIs are received. Another purpose is to create summary plots about companies submitting these EoIs, to aid presentation and reports.
+
+More specifically, [2_EoI_Process.Rmd](2_EoI_Process.Rmd) reads in a `EoI_BatchX_raw.csv` and outputs a `EoI_BatchX_formatted.xlsx.`
+- The output excel file is tidied and restructured in such a way to aid the next stage of processing for the program management team (pairing companies with ISAs). 
+- The output excel file has passed validation checks (1) Checking if a company has consented to data sharing, and (2) Searching for duplicate information which suggests a company has submitted an EoI more than once. It searches for duplications within the current EoI batch, but also across previous EoI batches.
+
+Then [3_EoI_Plot.Rmd](3_EoI_Plot.Rmd) creates bar plots for each EoI batch separately and all batches together, to summarise and visualise features of the companies. Every time you run this plotting code, it will update the group plots that represent all EoI batches so far. 
 
 ### Prerequisites to run this code:
 
  - Install `R` and `R Studio` on your computer (to interact with `R`)
- - Have access to EoI csv files (these are the input to this code)
+ - Raw EoI csv files 
 
 ### How to run this code:
 
-Locally, download the files within this folder to your computer (or clone this GitHub repository).
+- Locally, download the files within this folder to your computer (or a better option - clone this GitHub repository).
+- The first time you run the code, read and run [1_EoI_SetUp.Rmd](1_EoI_SetUp.Rmd)
+- Every time you have a new EoI batch, run [2_EoI_Process.Rmd](2_EoI_Process.Rmd) and [3_EoI_Plot.Rmd](3_EoI_Plot.Rmd)
 
-- Put the EoI csv files into a folder called 'Inputs'
-- Make an empty folder called 'Outputs'
-- Open up [EoI_Process.Rmd](EoI_Process.Rmd) in R Studio and:
-   - Change location of your 'Inputs' folder and csv file name (Step 1)
-   - Press *Run -> Run All* or run every code chunk individually, to see each stage of processing
-- After [EoI_Process.Rmd](EoI_Process.Rmd) has successfully run, you should have a new folder in Outputs called 'OUTPUTS_EoIname' with a formatted excel file and png plots 
+At the start of your session your file structure may look like this:
+
+<img width="200" alt="files-to-start" src="Images/directory_input.png">
+
+After processing batch 1,2,3:
+
+<img width="200" alt="files-to-start" src="Images/directory_output.png">
 
 ## :warning: Important note about personal data 
 
-No data should be stored on this GitHub repo! Just the code to process the data. 
+No data should be stored on this GitHub repo! Just the code to process the data. `R notebook` files can contain outputs from running the code chunks. Clear all outputs before uploading/pushing a new version to GitHub to make sure only the code (not the output of the code) is displayed. Make sure no outputs are present in the `.Rmd` file or any rendered files ( `.html` or `PDF`). 
 
-This is an `R notebook` file, to make it more accessible to new comers. 
- `R notebook` files can contain outputs from running the code chunks. 
- 
-**Clear All Outputs** before uploading a new version to GitHub to make sure only the code (not the output of the code) is displayed. 
+<img width="200" alt="clear-outputs" src="Images/clear_outputs.png">
 
-Make sure no outputs are present in the `.Rmd` file and the `.html` rendered file. 
+The data contained in [Demo_Inputs](Demo_Inputs) is made up data, generated pseudo-randomly, to match the structure of real data files. Any resemblance to real people or companies is purely coincidental and unintended. This data is intended solely for testing and development purposes and should not be used in any real-world applications or scenarios.
 
-<img width="896" alt="clear-outputs" src="https://github.com/user-attachments/assets/bc85f495-3b65-47c4-9861-9705b01bb10d">
-
-## Description of what the `R` code does:
-> - Coming soon
-
-## Features to implement soon:
-- When reading in the EoI, check the formatting matches a demo format (we are assuming all bathes are the same as batch 7)
-- Check for duplicates across previous batches (by looping through the 'Inputs' directory - note which batch the duplicate is in, if found)
-- Create the plots for all batches, not just one batch
-- Think about other filters that may make them not eligible (e.g. employees > 250, not in UK)
-
-## Features to consider later:
-- When checking for duplicates, do partial name matches
-- Can we pre-match companies to ISAs in some sort automated way - based on some key words matches - can AI help? 
+## New features to consider implementing
+- Think about other filters that may make a company not eligible for ISA support (e.g. employees > 250, not in UK) and include these in the validation steps
+- When checking for duplicates, consider doing partial name matches
+- Improvements to plots and summary statistics
+- Cutting down lines of code (make more efficient, some currently a bit long winded)
+- Can we pre-match companies to ISAs in some sort automated way to begin with - based on key words matches - can AI help? 
 
 ## People working on this
 - Rachael Stickland (BridgeAI ISA and Turing employee)
 - Alexandra Araujo Alvarez (BridgeAI Senior Research Community Manager)
 - Punita Maisuria 
+> - Please add
