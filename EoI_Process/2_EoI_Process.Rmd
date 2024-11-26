@@ -112,6 +112,9 @@ for (EoI_file in EoI_list) {
   # Read in the past EoI file
   pEoI <- read.csv(paste0(cEoI_directory, '/Inputs/', EoI_file), header = TRUE)
   all_pEoI[[EoI_file]] <- pEoI
+  # Add a column to store the file name
+  pEoI$EoI_file <- EoI_file
+  all_pEoI[[EoI_file]] <- pEoI
 }
 
 # Combine all past dataframes into one
@@ -137,6 +140,13 @@ matching_indices <- which(all_duplicated_rows)
 # Create a new data frame with the matching rows
 cEoI_Duplicates <- cEoI_Val1[matching_indices, , drop = FALSE]
 
+# Add a new column to indicate the EoI file
+cEoI_Duplicates$EoI_file <- ifelse(duplicated_within_cEoI[matching_indices], cEoI_csv_filename, combined_pEoI$EoI_file[matching_indices])
+# Change the row name to indicate where the duplicate came from
+rownames(cEoI_Duplicates) <- paste(matching_indices, cEoI_Duplicates$EoI_file, sep = "_")
+# Remove the EoI_file column
+cEoI_Duplicates$EoI_file <- NULL
+
 # Remove the matching rows from the original cEoI dataframe
 if (length(matching_indices) != 0) {
   cEoI_Val12 <- cEoI_Val1[!all_duplicated_rows, , drop = FALSE]
@@ -144,7 +154,6 @@ if (length(matching_indices) != 0) {
   cEoI_Val12 <- cEoI_Val1
 }
 ```
-
 ## 3d. Validate the validations!
 
 We now have 3 dataframes (cEoI_Val12, cEoI_NoConsent and cEoI_Duplicates). The number of rows (companies) in these dataframes should add up to the same number in the original dataframe (cEoI) before we did anything to it. Let's check that, to make sure we have not lost or added a company.
