@@ -28,6 +28,7 @@ Running the code:
 - Locally, download the files within this folder to your computer (or a better option - clone this GitHub repository).
 - The first time you run the code, read and run [1_EoI_SetUp.Rmd](1_EoI_SetUp.Rmd)
 - Every time you have a new EoI batch, run [2_EoI_Process.Rmd](2_EoI_Process.Rmd) and [3_EoI_Plot.Rmd](3_EoI_Plot.Rmd)
+- When you open up the R notebook files, select Visual mode: <img width="132" alt="visual_mode" src="https://github.com/user-attachments/assets/1c92eade-730a-4ad9-8144-ecf19c0234b3" />
 
 At the start of your session your file structure may look like this:
 
