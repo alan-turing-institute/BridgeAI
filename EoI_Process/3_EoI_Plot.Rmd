@@ -12,12 +12,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Step 1 - Define the output folder
+# Step 1 - Define the output folder (EDIT ME!)
 
 It is assumed that you have run the notebook `2_EoI_Process.Rmd` before this one, on every EoI batch you would like to include in the plots. Please note, the below code will only plot things in the 'Validated' tab of the output excel files.
 
 ```{r}
-# CHANGE NEXT LINE - location of 'Outputs' folder, which should now contain sub folders
+# location of 'Outputs' folder, which should now contain sub folders for each EoI processed
 cEoI_output_directory <- "~/Documents/GitHub/BridgeAI/EoIs/Outputs"  
 ```
 
