@@ -14,11 +14,11 @@ knitr::opts_chunk$set(
 
 This notebook will process the current EoI batch, outputting a formatted excel file. It assumes you have all your EoI inputs inside a folder called 'Inputs'. During the processing it will compare the current EoI to all previous EoIs within the same Input folder, to check for duplicates.
 
-EDIT BELOW TO MATCH FILES ON YOUR COMPUTER:
+EDIT THE CODE LINES BELOW TO MATCH FILES ON YOUR COMPUTER:
 
 ```{r}
 # directory (folder) that contains your 'Inputs' folder:
-cEoI_directory <- "~/Documents/GitHub/BridgeAI/EoIs"
+cEoI_directory <- "~/Documents/GitHub/BridgeAI/EoI_Process/Demo"
 # EoI file you want to process:
 cEoI_csv_filename <- "EoI_Demo_B1.csv"
 ```
@@ -85,34 +85,18 @@ Find if any companies did not consent to their data being processed. If companie
 ```{r}
 # run a function that finds if any company did not consent
 val_1_results <- val_1(cEoI_df = cEoI)
-# view the results - NoConsent
-head(val_1_results$cEoI_NoConsent)
-# view the results - Validation 1
 ```
 
 ## 3c. Duplicates
 
 Check if there are any duplicate companies across batches . The code chunk below compares the currently select EoI with any other EoIs it finds in the 'Inputs' directory. If duplicates are found they will be put into a new dataframe 'cEoI_Duplicates', and the rest of the companies are put into 'cEoI_Val12', indicating they have passed validation step 1 and 2.
 
+Checks for duplicates on 4 columns only: "Organisation.Name", "Companies.House.Registration.no.", "Website" and "Email.address"
+
 ```{r}
 # run a function that spots duplicates
-val_2_results <- val_2(cEoI_directory,cEoI_csv_filename,val_1_results$cEoI_Val1)
+val_2_results <- val_2(cEoI_directory,cEoI_csv_filename)
 
-```
-
-## 3d. Validate the validations!
-
-We now have 3 dataframes (cEoI_Val12, cEoI_NoConsent and cEoI_Duplicates). The number of rows (companies) in these dataframes should add up to the same number in the original dataframe (cEoI) before we did anything to it. Let's check that, to make sure we have not lost or added a company.
-
-```{r}
-# run a function to validate the validations! 
-val_check(val_2_results$cEoI_Val12,val_1_results$cEoI_NoConsent,val_2_results$cEoI_Duplicates)
-```
-
-Take a look at the validated data frame:
-
-```{r}
-head(val_2_results$cEoI_Val12)
 ```
 
 # Step 4 - Tidy up Current_EoI
@@ -129,13 +113,13 @@ Running the code chunk below will rename columns to be more sensible to read.
 
 ```{r}
 # run a function to tidy up current EoI
-tidy_cEoI <- tidy_up(cEoI_df, val_2_results$cEoI_Val12, val_2_results$cEoI_Duplicates, val_1_results$cEoI_NoConsent)
+tidy_cEoI <- tidy_up(cEoI_df = cEoI)
 ```
 
 Explore the result of each tidy data frame, for example:
 
 ```{r}
-head(tidy_cEoI$cEoI_Val12)
+head(tidy_cEoI)
 ```
 
 # Step 5 - Restructure validated cEoI and save to excel
@@ -143,6 +127,9 @@ head(tidy_cEoI$cEoI_Val12)
 Now we will restructure the dataframe(s) in a way that is helpful for the next steps of matching each company to an ISA. We will then save each dataframe as a separate tab of an excel output.
 
 ```{r}
+# combine the messages into a single data frame
+all_messages <- rbind(val_1_results, val_2_results)
+
 # run a function that restructures and saves to excel
-save_to_excel(raw_cEoI,tidy_cEoI$cEoI_Val12,tidy_cEoI$cEoI_NoConsent,tidy_cEoI$cEoI_Duplicate,cEoI_csv_filename,output_dir)
+save_to_excel(raw_cEoI,tidy_cEoI,all_messages,cEoI_csv_filename,output_dir)
 ```
