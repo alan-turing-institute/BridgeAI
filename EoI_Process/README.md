@@ -11,7 +11,7 @@ More specifically, [2_EoI_Process.Rmd](2_EoI_Process.Rmd) reads in a `EoI_BatchX
 Then [3_EoI_Plot.Rmd](3_EoI_Plot.Rmd) creates bar plots for each EoI batch separately and all batches together, to summarise and visualise features of the companies. Every time you run this plotting code, it will update the group plots that represent all EoI batches so far. 
 
 ## People working on this
-- Rachael Stickland (BridgeAI ISA and Turing employee)
+- Rachael Stickland (BridgeAI ISA Alumni)
 - Alexandra Araujo Alvarez (BridgeAI Senior Research Community Manager)
 - Punita Maisuria 
 - *Please add*
