@@ -12,13 +12,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Step 1 - Define the output folder
+# Step 1 - Define the output folder (EDIT ME!)
 
-It is assumed that you have run the notebook `2_EoI_Process.Rmd` before this one, on every EoI batch you would like to include in the plots. Please note, the below code will only plot things in the 'Validated' tab of the output excel files.
+It is assumed that you have run the notebook `2_EoI_Process.Rmd` before this one, on every EoI batch you would like to include in the plots. It is assumed you have checked the 'Messages' tab and made a new tab called 'Validated' (similar to the 'Formatted' tab but with any companies removed that should not be included in the plots).
 
 ```{r}
-# CHANGE NEXT LINE - location of 'Outputs' folder, which should now contain sub folders
-cEoI_output_directory <- "~/Documents/GitHub/BridgeAI/EoIs/Outputs"  
+# location of 'Outputs' folder, which should now contain sub folders for each EoI processed
+cEoI_output_directory <- "~/Documents/GitHub/BridgeAI/EoI_Process/Demo/Outputs"  
 ```
 
 # Step 2 - Read in each formatted EoI, and make a combined EoI
