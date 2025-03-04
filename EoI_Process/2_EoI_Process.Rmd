@@ -18,9 +18,10 @@ EDIT THE CODE LINES BELOW TO MATCH FILES ON YOUR COMPUTER:
 
 ```{r}
 # directory (folder) that contains your 'Inputs' folder:
-cEoI_directory <- "~/Documents/GitHub/BridgeAI/EoI_Process/Demo"
+current_directory <- getwd()
+cEoI_directory <- paste0(current_directory, '/Demo') # change this to your directory
 # EoI file you want to process:
-cEoI_csv_filename <- "EoI_Demo_B1.csv"
+cEoI_csv_filename <- "EoI_Demo_B3.csv"
 ```
 
 Now run this code chunk below to check these inputs are valid:

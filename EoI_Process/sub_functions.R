@@ -16,7 +16,8 @@ check_inputs = function(directory, filename){
     }
 
     message(paste0("Found the file! Processing file: ",file_path))
-  }
+}
+
 
 ############# demo_match ----
 

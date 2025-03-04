@@ -131,3 +131,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# R workspace
+.Rproj.user
+.Rhistory
+*.Rproj
+
+# Exclude EoI data
+EoIs/
