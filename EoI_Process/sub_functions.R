@@ -2,7 +2,7 @@
 
 check_inputs = function(directory, filename){
 
-    file_path <- file.path(directory, 'Inputs',filename)
+    file_path <- file.path(directory, 'Inputs', filename)
 
     # Check if the file exists
     if (!file.exists(file_path)) {
@@ -21,9 +21,7 @@ check_inputs = function(directory, filename){
 
 ############# demo_match ----
 
-demo_match = function(cEoI_df){
-  demo_EoI <- read.csv('Demo/Inputs/EoI_Demo_B1.csv', header = TRUE)
-
+match_col_names = function(cEoI_df, demo_EoI){
   # Check if the number of columns is the same for cEoI_df and demo_EoI
   if (ncol(cEoI_df) != ncol(demo_EoI)) {
     stop("Comparing EoI to the demo EoI. \nNumber of columns does not match! Resolve before continuing.")
@@ -35,7 +33,24 @@ demo_match = function(cEoI_df){
       stop("Comparing EoI to the demo EoI. \nThe column names do not match! Resolve before continuing.")
     }
   }
+}
 
+demo_match_v1 = function(cEoI_df){
+  # Demo_B1 includes columns from the first edition of EoI forms
+  demo_EoI <- read.csv('Demo/Inputs/EoI_Demo_B1.csv', header = TRUE)
+  match_col_names(cEoI_df, demo_EoI)
+}
+
+demo_match_v2 = function(cEoI_df){
+  # Demo_B2 includes columns from the second edition of EoI forms
+  demo_EoI <- read.csv('Demo/Inputs/EoI_Demo_B2.csv', header = TRUE)
+  match_col_names(cEoI_df, demo_EoI)
+}
+
+demo_match_v3 = function(cEoI_df){
+  # Demo_B3 includes columns from the third edition of EoI forms
+  demo_EoI <- read.csv('Demo/Inputs/EoI_Demo_B3.csv', header = TRUE)
+  match_col_names(cEoI_df, demo_EoI)
 }
 
 #############  val_1 ----
@@ -71,39 +86,40 @@ val_1 <- function(cEoI_df) {
 }
 
 #############  val_2 ----
-
 val_2 <- function(cEoI_directory, cEoI_csv_filename) {
   # Define the column names to check for duplicates on
-  column_names <- c('Organisation.Name', 'Companies.House.Registration.no.', 'Website', 'Email.address')
-
+  column_names <- c('Organisation.Name', 'Website', 'Email.address')
+  
   # List all files in the directory, excluding the reference csv (cEoI)
   EoI_list <- list.files(paste0(cEoI_directory, '/Inputs'))
-
+  
   # Initialize a list to store past dataframes
   all_EoI <- list()
-
+  
   # Read each past file and store the dataframes in a list
   for (EoI_file in EoI_list) {
     # Read in the past EoI file
     EoI <- read.csv(paste0(cEoI_directory, '/Inputs/', EoI_file), header = TRUE)
     # Add columns to store the file name and original row number
+    EoI <- EoI[column_names]
+    
     EoI$EoI_file <- EoI_file
     EoI$EoI_row <- seq_len(nrow(EoI))
     all_EoI[[EoI_file]] <- EoI
   }
-
+  
   # Combine all past dataframes into one without using row names
   combined_EoI <- do.call(rbind, all_EoI)
   rownames(combined_EoI) <- NULL
-
+  
   # Initialize an empty data frame to store messages
   duplicate_message <- data.frame(message = character(), stringsAsFactors = FALSE)
-
+  
   # Loop through each column in combined_EoI
   for (column in column_names) {
     # Get the column data
     col_subset <- combined_EoI[, c(column, 'EoI_file', 'EoI_row')]
-
+    
     # Check for blank or NaN values and print a statement
     blank_or_nan_indices <- which(is.na(col_subset) | col_subset == "" | col_subset == "N/A")
     if (length(blank_or_nan_indices) > 0) {
@@ -113,13 +129,13 @@ val_2 <- function(cEoI_directory, cEoI_csv_filename) {
         duplicate_message <- rbind(duplicate_message, data.frame(message = message, stringsAsFactors = FALSE))
       }
     }
-
+    
     # Remove blank, N/A, and NA values
     col_subset <- col_subset[!(is.na(col_subset[[column]]) | col_subset[[column]] == "N/A" | col_subset[[column]] == ""), ]
-
+    
     # Find duplicates
     duplicate_indices <- which(duplicated(col_subset[[column]]) | duplicated(col_subset[[column]], fromLast = TRUE))
-
+    
     if (length(duplicate_indices) != 0) {
       for (index in duplicate_indices) {
         duplicate_value <- col_subset[[column]][index]
@@ -132,17 +148,18 @@ val_2 <- function(cEoI_directory, cEoI_csv_filename) {
           duplicate_message <- rbind(duplicate_message, data.frame(message = message, stringsAsFactors = FALSE))
         }
       }
-
+      
       # Remove duplicate messages
       duplicate_message <- unique(duplicate_message)
     }
   }
-
+  
   # Print all unique messages
   message(duplicate_message$message)
-
+  
   return(duplicate_message)
 }
+
 #############  tidy_up ----
 
 tidy_up <- function(cEoI_df) {

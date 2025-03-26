@@ -19,9 +19,10 @@ EDIT THE CODE LINES BELOW TO MATCH FILES ON YOUR COMPUTER:
 ```{r}
 # directory (folder) that contains your 'Inputs' folder:
 current_directory <- getwd()
+message(paste0("Your current directory is: ", current_directory))
 cEoI_directory <- paste0(current_directory, '/Demo') # change this to your directory
 # EoI file you want to process:
-cEoI_csv_filename <- "EoI_Demo_B3.csv"
+cEoI_csv_filename <- "EOI_Demo_B3.csv"
 ```
 
 Now run this code chunk below to check these inputs are valid:
@@ -38,7 +39,7 @@ check_inputs(cEoI_directory,cEoI_csv_filename)
 Running the code chunk below will load in the current EoI (the one you want to process)
 
 ```{r}
-cEoI_file_path <- paste0(cEoI_directory, '/Inputs/', cEoI_csv_filename) 
+cEoI_file_path <- file.path(cEoI_directory, "Inputs", cEoI_csv_filename)
 cEoI <- read.csv(cEoI_file_path, header = TRUE) # Read the current EoI CSV file into R
 raw_cEoI <- cEoI # to save for later, unedited
 head(cEoI) # view the first few rows of the data
@@ -76,7 +77,10 @@ We are assuming that the folder 'Demo_Inputs' is in the same location as this 1_
 
 ```{r}
 # run function to check for demo match
-demo_match(cEoI_df = cEoI)
+# currently it checks the third version of the EoI batches (versions change when the application form changes)
+# the following function basically checks if Demo_B3 column name matches with the input file column names
+# when a new form introduced, create a new Demo_B4 file with the updated columns and create a new function demo_match_v4 in the `sub_functions.R` file
+demo_match_v3(cEoI_df = cEoI)
 ```
 
 ## 3b. No Consent
