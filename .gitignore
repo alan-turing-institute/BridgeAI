@@ -1,4 +1,6 @@
 # <!-- Using .gitignore Python template-->
+.vscode
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -136,6 +138,7 @@ dmypy.json
 .Rproj.user
 .Rhistory
 *.Rproj
+.RData
 
 # Exclude EoI data
 EoIs/
