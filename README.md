@@ -48,6 +48,7 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
  - Dominica D'Arcangelo, BridgeAI Programme Manager, ISA team
  - Anastasia Shteyn, BridgeAI Programme Manager, AI Governance
  - Alexandra Araujo Alvarez, BridgeAI Senior Research Community Manager
+ - Léllé Demertzi, Research Project Manager, The Turing Way
  - Punita Maisuria, BridgeAI Project Coordinator
 
    
