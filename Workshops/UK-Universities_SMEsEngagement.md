@@ -38,8 +38,8 @@ To structure the session a miro board was prepared in advance with the following
 
 ### Key take-away from the session:
 * Universities offer a lot of activities to engage with SMEs from placements, to Innovation Hubs, and KTPs. Universities may prioritise working with bigger companies but depending on the topic they organise hubs for everyone
-* Engaging with BridgeAI sectors is hard and unusual, which is a great pro for a programme like BridgeAI to exist - becoming sector agnostic could benefit sectors that are already good players in AI like Fintechs 
-* ISA provide an excellent entry point for SMEs. Their free / unbiased advice is key for connecting SMEs to other opportunities, find other partners or to review their AI Strategy
+* Engaging with BridgeAI sectors is hard and unusual, which is a great pro for a programme like BridgeAI to exist - becoming sector agnostic could benefit sectors that are already good players in AI like Fintechs and Health
+* ISA provide an excellent entry point for SMEs. Their free / unbiased advice is key for connecting SMEs to other opportunities, find other partners or to review their AI Strategy. We need to establish better pathways and evidence
 * ISA offer accept and work with SMEs that would potentially not get the interest from some universities. 
 
 ### Follow-on actions
