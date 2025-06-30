@@ -35,7 +35,7 @@ jobs:
         id: create-innovation
         uses: JasonEtco/create-an-issue@v2
         with:
-          filename: .github/ISSUE_TEMPLATE/innovation-weekly-template.md
+          filename: .github/innovation-weekly-template.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATE: ${{ steps.target-date.outputs.date }}
