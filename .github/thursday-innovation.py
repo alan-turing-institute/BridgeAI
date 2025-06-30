@@ -4,6 +4,7 @@ import calendar
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+# Previously this offset the timings for the month after next so I've changed it so its not offeset anymore by switching the default to 0 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "number",
@@ -13,7 +14,7 @@ parser.add_argument(
 parser.add_argument(
     "--month-offset",
     type=int,
-    default=2
+    default=0
 )
 clargs = parser.parse_args()
 
