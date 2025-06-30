@@ -1,8 +1,8 @@
 ---
 name: Innovation Workstream Agenda
 about: Agenda issue for Innovation Workstream Weekly Meetings
-title: Agenda for Innovation Workstream Meeting - [target date]
-labels: innovation, documentation
+title: Agenda for Innovation Workstream Meeting - {{ env.DATE }}
+labels: documentation
 assignees: ''
 
 ---
