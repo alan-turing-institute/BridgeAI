@@ -1,0 +1,41 @@
+name: Innovation Meeting Issues
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  schedule:
+    # This will run at 8:30am on the first day of every month. To adjust, go to https://crontab.guru/
+    - cron: "30 8 1 * *"
+
+jobs:
+  create_issue:
+    name: Create Innovation Weekly Meeting issues for this month 
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Loop over 1st to 5th Thursday of a month
+        thursday: [1, 2, 3, 4, 5]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          pip install python-dateutil
+
+      - name: Generate target date
+        id: target-date
+        run: |
+          echo "date=$(.github/thursday-innovation.py ${{ matrix.thursday }})" >> "$GITHUB_OUTPUT"
+
+      - name: Create Innovation Weekly Meeting issues
+        # Skip this step if there is no Thursday, i.e. only four Thursdays in a month
+        if: ${{ steps.target-date.outputs.date != '' }}
+        id: create-innovation
+        uses: JasonEtco/create-an-issue@v2
+        with:
+          filename: .github/innovation-weekly-template.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATE: ${{ steps.target-date.outputs.date }}
