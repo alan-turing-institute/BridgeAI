@@ -49,7 +49,7 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
  - Anastasia Shteyn, BridgeAI Programme Manager, AI Governance
  - Alexandra Araujo Alvarez, BridgeAI Senior Research Community Manager
  - Léllé Demertzi, Research Project Manager, The Turing Way
- - Punita Maisuria, BridgeAI Project Coordinator
+ - Marie Chappell , BridgeAI Project Coordinator
 
    
  **Turing Workstreams Contributors**
