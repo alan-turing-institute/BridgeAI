@@ -58,8 +58,7 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
  - Clementina Ramirez Marengo, Applied Skills Officer
  - Sofia Pires, Applied Skills Officer
  - Aida Mehonic, TPS Senior Research, Research Application Manager
- - Arielle Bennett, Turing Way Practitioners Hub team lead
- - Malvika Sharan, TPS Senior Researcher - Open Research, Turing Way Practitioners Hub team lead
+ - Arielle Bennett, Turing Way Practitioners Hub team lead, Innovation Workstream Lead
  - Shane Conneely, Partnership Development Lead
  - Florian Ostmann, Head AI Governance and Regulatory Innovation, AI Governance team lead
  - Shakir Laher, Research Application Manager, Public Policy Programme
@@ -96,6 +95,7 @@ In addition, you can find the [The Alan Turing Institute BridgeAI website](https
  - Arshiya Thasneem, Project Coordinator
  - Ella McCaffrey, BridgeAI Project Manager
  - Dr Kirstie Whitaker, BridgeAI Programme Director
+ - Malvika Sharan, TPS Senior Researcher - Open Research, Turing Way Practitioners Hub team lead
 
 📫 Contact
 ---
